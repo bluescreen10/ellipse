@@ -35,6 +35,7 @@
   """ Set the project tools and variables
   """
   (let ((project (find-project (buffer-file-name))))
+    (if (project)
         (let ((home (plist-get project ':home))
               (name (plist-get project ':name))
               (tags (project-get-tags-file mode-name (plist-get project ':name))))
