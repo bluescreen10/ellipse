@@ -6,7 +6,7 @@ Ellipse
 
 What's ellipse?
 
-=cut
+=head3
 
 Ellipse is an extension for emacs to teach new tricks
 
@@ -14,9 +14,11 @@ Ellipse is an extension for emacs to teach new tricks
 
 Features:
 
-=cut
+=head3
 
 * Creates and Updates ETAGS files, it maintains tags file per project and mode 
 * Pretty print
 * Locate file
 * Recursive grep
+
+=cut
