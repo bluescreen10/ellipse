@@ -22,6 +22,12 @@
             (local-set-key "\C-xt" 'pretty-print-java)
             (setup-project)))
 
+;; C
+(add-hook 'c-mode-hook  
+          (lambda ()
+            (local-set-key "\C-xt" 'pretty-print-c)
+            (setup-project)))
+
 
 ;; General functions
 
@@ -67,9 +73,9 @@
 
 (defun project-map-mode-to-language(mode)
   " Maps mode-name to etags languaje"
-  (message "Mode name: %s" mode)
   (cond ((string= mode "CPerl") '"Perl")
-        ((string= mode "JDE") '"Java")))
+        ((string= mode "JDE") '"Java")
+        ((string= mode "C/l") '"C")))
 
 
 ;; ETAGS
