@@ -1,3 +1,8 @@
+;; Globals
+(setq ellipse-config-file "~/.ellipse-settings")
+(setq projects)
+(setq ellipse-settings-modified-date 0)
+
 ;; Set Major mode hooks
 ;; Perl
 (add-hook 'cperl-mode-hook
@@ -24,7 +29,6 @@
   """ Set the project tools and variables
   """
   (let ((project (find-project (buffer-file-name))))
-    (if project
         (let ((home (plist-get project ':home))
               (name (plist-get project ':name))
               (tags (project-get-tags-file mode-name (plist-get project ':name))))
@@ -44,7 +48,13 @@
 (defun find-project(filename)
   """ Search thourght projects listed in ~/.ellipse-settings and
       find the matching project according to buffer's locaton
-  """ 
+  """
+  (let ((mdate (float-time (nth 5 (file-attributes project-config-file)))))
+    (if (> mdate ellipse-settings-modified-date)
+        (progn
+          (setq ellipse-settings-modified-date mdate )
+          (setq projects)
+          (load ellipse-config-file))))
   (let ((index 0)
         (number-of-projects (length projects))
         (current-project nil))
@@ -62,11 +72,6 @@
         ((string= mode "JDE") '"Java")))
 
 
-;;; Load config
-(setq project-config-file "~/.ellipse-settings")
-(if (file-exists-p project-config-file)
-      (load project-config-file))
-
 ;; ETAGS
 ;; The various functions to regenerate tags table
 
@@ -75,7 +80,7 @@
   (file-truename (concat "~/.ellipse/" name "-" type ".TAGS")))
 
 
-;; find /home/mariano/working/workspace2 -name "*.pm" -type f -mmin -1000
+;; find
 (defun tags-vc-hook(command file flags)
   "regenerate tags on repository updates"
   (regenerate-tags))

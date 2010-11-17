@@ -3,10 +3,12 @@ ELLIPSE
 
 WHAT'S ELLIPSE?
 ---------------
+
 Ellipse is an extension for emacs to teach new tricks
 
 FEATURES
 --------
+
 * Creates and Updates ETAGS files, it maintains tags file per project and mode
 * Pretty print
 * Locate file
