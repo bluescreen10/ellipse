@@ -1,3 +1,8 @@
+;; Requires
+(require 'etags)
+(require 'auto-complete-config)
+
+
 ;; Globals
 (setq ellipse-config-file "~/.ellipse-settings")
 (setq projects)
@@ -35,10 +40,10 @@
   """ Set the project tools and variables
   """
   (let ((project (find-project (buffer-file-name))))
-    (if (project)
+    (if project
         (let ((home (plist-get project ':home))
               (name (plist-get project ':name))
-              (tags (project-get-tags-file mode-name (plist-get project ':name))))
+              (tags (project-get-tags-file (project-map-mode-to-language mode-name) (plist-get project ':name))))
 
           ;; Project general settings
           (make-local-variable 'project-settings)
@@ -48,6 +53,10 @@
           (make-local-variable 'tags-file-name)
           (setq tags-file-name tags)
 
+          ;; AUTOCOMPLETE
+          (add-to-list 'ac-sources 'ac-source-etags)
+          (add-to-list 'ac-sources 'ac-source-yasnippet)
+
           ;; Grep in workspace
           (make-local-variable 'workspace-dir)
           (setq workspace-dir (file-truename home))))))
@@ -56,7 +65,7 @@
   """ Search thourght projects listed in ~/.ellipse-settings and
       find the matching project according to buffer's locaton
   """
-  (let ((mdate (float-time (nth 5 (file-attributes project-config-file)))))
+  (let ((mdate (float-time (nth 5 (file-attributes ellipse-config-file)))))
     (if (> mdate ellipse-settings-modified-date)
         (progn
           (setq ellipse-settings-modified-date mdate )
@@ -76,6 +85,7 @@
   " Maps mode-name to etags languaje"
   (cond ((string= mode "CPerl") '"Perl")
         ((string= mode "JDE") '"Java")
+        ((string= mode "Java/l") '"Java")
         ((string= mode "C/l") '"C")))
 
 
@@ -95,7 +105,7 @@
 (defun regenerate-tags()
   "regenerate etags for each language"
   (if (boundp 'project-settings)
-      (let ((tags (project-get-tags-file mode-name (plist-get project-settings ':name)))
+      (let ((tags (project-get-tags-file (project-map-mode-to-language mode-name) (plist-get project-settings ':name)))
             (home (file-truename (plist-get project-settings ':home)))
             (language (project-map-mode-to-language mode-name)))
         (start-process "refresh-tags" "*etags*" "etags" "--recurse=yes" (concat "--languages=" language) "-f" tags home))))
@@ -179,3 +189,12 @@
   (locate pattern workspace-dir))
 
 (global-set-key "\C-xgl" 'locate-in-workspace)
+
+;; Autocomplete
+(ac-config-default)
+(setq ac-auto-start nil)
+;;(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(global-set-key (kbd "<C-return>") 'auto-complete)
+(defvar ac-source-etags
+  '((candidates
+     . (lambda () (all-completions ac-target (tags-lazy-completion-table))))))
